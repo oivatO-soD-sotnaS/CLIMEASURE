@@ -1,0 +1,34 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model institute {
+  id_institute Int      @id @default(autoincrement())
+  name         String   @unique(map: "name") @db.VarChar(128)
+  description  String   @db.VarChar(512)
+  lat          Float    @db.Float
+  lng          Float    @db.Float
+  img_src      String   @db.VarChar(512)
+  report       report[]
+
+  @@unique([lat, lng], map: "lat")
+}
+
+model report {
+  id_report    Int       @id @default(autoincrement())
+  id_institute Int
+  solar_energy Float     @db.Float
+  temperature  Float     @db.Float
+  wind_speed   Float     @db.Float
+  rain         Int
+  moisture     Float     @db.Float
+  timestamp    DateTime  @default(now()) @db.Timestamp(0)
+  institute    institute @relation(fields: [id_institute], references: [id_institute], onDelete: NoAction, onUpdate: NoAction, map: "report_ibfk_1")
+
+  @@index([id_institute], map: "id_institute")
+}
